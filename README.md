@@ -13,7 +13,12 @@ USAGE:
 EXAMPLE:
 'python3 web-source-extractor.py -u http://thisisatest.com/ -p pages-found.txt -f fixed-length:32'
 
-HELP:
+The file containing web directories that you wish to scrape should be a list, with each directory starting with a '/' and on a new line:
+'/home
+
+/blogs
+
+/test'
 
 
 
