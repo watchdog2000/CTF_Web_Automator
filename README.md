@@ -7,13 +7,16 @@ It accepts a parameter to be able to visit any webpages previously found using t
 
 The only dependency is python3, and the requests module is installed: 'python3 -m pip install requests'.
 
-USAGE: 
+USAGE:
+
 'python3 web-source-extractor.py -u < url > -p < file containing a list of page sub directories > -f < hex | fixed-length | custom >'
 
 EXAMPLE:
+
 'python3 web-source-extractor.py -u http://thisisatest.com/ -p pages-found.txt -f fixed-length:32'
 
 The file containing web directories that you wish to scrape should be a list, with each directory starting with a '/' and on a new line:
+
 '/home
 
 /blogs
