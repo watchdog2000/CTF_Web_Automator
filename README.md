@@ -11,7 +11,7 @@ USAGE:
 'python3 web-source-extractor.py -u < url > -p < file containing a list of page sub directories > -f < hex | fixed-length | custom >'
 
 EXAMPLE:
-'python3 web-source-extractor.py -u http://test.com/ -p pages-found.txt -f fixed-length:32'
+'python3 web-source-extractor.py -u http://thisisatest.com/ -p pages-found.txt -f fixed-length:32'
 
 HELP:
 
