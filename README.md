@@ -1,5 +1,5 @@
 # CTF_Web_Automator
-A small and simple program to aid within web recon in a CTF.
+A small and simple program to aid with web recon within a CTF competition.
 
 This tool can scrape a site for all HTML comments, as well as ‘flags’ both inside and outside of comments. This automated and aids in extracting potential usernames, passwords, helpful hints, and flags of a specific format from web pages.
 
