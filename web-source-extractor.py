@@ -1,5 +1,5 @@
 """
-web-source-scraper.py - automating web recon
+web-source-extractor.py - automating web recon
 author: watchdog2000
 24/05/2020
 python3 web-source-scraper.py --url <url> --flag-format <hex|length|custom>
