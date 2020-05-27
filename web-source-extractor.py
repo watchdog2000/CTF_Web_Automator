@@ -51,7 +51,7 @@ def flag_format_check(flag_format_option):
     if flag_format_option:
         flag_format = flag_format_option.lower()
         if flag_format == 'hex':
-            flag_format = "[0-9a-fA-F]"
+            flag_format = "[0-9a-fA-F]{2,}"
         elif flag_format == 'custom':
             while True:
                 first_chars = input('[?] - What are the first few characters '
