@@ -9,11 +9,11 @@ The only dependency is python3, and the requests module is installed: 'python3 -
 
 USAGE:
 
-'python3 web-source-extractor.py -u < url > -p < file containing a list of page sub directories > -f < hex | fixed-length | custom >'
+'python3 web-source-extractor.py -u < url > -p < file containing a list of page sub directories > -f < hex | custom >'
 
 EXAMPLE:
 
-'python3 web-source-extractor.py -u http://thisisatest.com/ -p pages-found.txt -f fixed-length:32'
+'python3 web-source-extractor.py -u http://thisisatest.com/ -p pages-found.txt -f hex'
 
 The file containing web directories that you wish to scrape should be a list, with each directory starting with a '/' and on a new line:
 
@@ -22,6 +22,8 @@ The file containing web directories that you wish to scrape should be a list, wi
 /blogs
 
 /test'
+
+The tool also spiders web pages to try and find more pages to search, and outputs these at the end of the program so that you have an easily accessible list of pages
 
 
 
