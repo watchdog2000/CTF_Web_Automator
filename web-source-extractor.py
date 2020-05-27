@@ -10,20 +10,16 @@ import requests  # for the requests sent
 import re  # regex
 import sys  # system commands
 
-pages = []
-all_comments = []
-all_flags = []
 
-
-#  argument handling
 def arg_parsing():
+    # argument handling
     parser = optparse.OptionParser()
     parser.add_option('-u', '--url', dest='url',
                       help='[REQUIRED] - The site which you wish to scrape '
                       'for html comments')
     parser.add_option('-f', '--flag-format', dest='flag_format',
                       help='[OPTIONAL] - The format for any flags you wish to '
-                      'scrape from the site.\n[hex|custom]')
+                      'scrape from the site.\n[hex|regex|custom]')
     parser.add_option('-p', '--pages', dest='pages',
                       help='[OPTIONAL] - a file containing a list of '
                       'directories of additonal pages on the site (recommended'
@@ -32,8 +28,8 @@ def arg_parsing():
     return (args, options)
 
 
-#  accept url as a param and validate it being a website format
 def url_check(url):
+    #  accept url as a param and validate it being a correct website format
     valid_url = re.compile('http(s)?://\w+\.\w+\S*')
     if url and valid_url.match(url):
         if url.endswith('/'):
@@ -52,6 +48,9 @@ def flag_format_check(flag_format_option):
         flag_format = flag_format_option.lower()
         if flag_format == 'hex':
             flag_format = "[0-9a-fA-F]{2,}"
+        elif flag_format == 'regex':
+            flag_format = input('[?] - Please input a regular expression for '
+                                'the flag you wish to find')
         elif flag_format == 'custom':
             while True:
                 first_chars = input('[?] - What are the first few characters '
@@ -70,12 +69,11 @@ def flag_format_check(flag_format_option):
             flag_format = first_chars + '\S+?' + last_chars
             return flag_format
         else:
-            print('[-] - ERROR - Please enter \'hex\', \'fixed-length\'\, \or '
+            print('[-] - ERROR - Please enter \'hex\', \'regex\'\, \or '
                   '\'custom\' ONLY', file=sys.stderr)
             sys.exit(0)
 
 
-#  read in dirs to access and scrape from file
 def pages_read(page_file):
     # reads pages to visit from the supplied document
     pages = ['/']
@@ -86,8 +84,66 @@ def pages_read(page_file):
     return pages
 
 
+def connection_test(url):
+    # implement checking that the initial url can be reached to avoid erroring
+    try:
+        print(f'\n[*] - Connecting to {url}...\n')
+        r = requests.get(url)
+    except:
+        print(f'[-] - ERROR - Connection to {url} could not be made',
+              file=sys.stderr)
+        sys.exit(0)
+
+
 def print_sep(num_chars):
     print('   ' + '-' * num_chars + ' \n')
+
+
+def extract_comments(page_data):
+    # extracting html comments
+    find_comment = '<!--(?:.|\r|\n)+?-->'
+    comments = re.findall(find_comment, page_data)
+    if comments:
+        print('[+] - COMMENTS - [+]')
+        for comment in comments:
+            print('- \"' + comment + '\"\n')
+    else:
+        print('[-] - No HTML comments present')
+
+    return comments
+
+
+def find_flags(page_data, flag_format):
+    # tests for lower case,  upper case, and title case flag to be thorough
+    flags = re.findall(flag_format, page_data)
+    flags += re.findall(flag_format.upper(), page_data)
+    flags += re.findall(flag_format.title(), page_data)
+
+    if flags:
+        print('[+] - FLAGS - [+]')
+        for flag in flags:
+            print('- ' + flag + '\n')
+    else:
+        print('[-] - No flags found...')
+
+    return flags
+
+
+def find_pages(page_data, url):
+    # finding new pages to spider
+    find_page = 'href=\".+?\"'
+    valid_links = []
+    links = re.findall(find_page, page_data)
+    if links:
+        for link in links:
+            link = link[len('href="'):-1]
+
+            if url in link:
+                link = link[len(url):]
+
+            valid_links.append(link)
+
+    return valid_links
 
 
 def print_summary(all_flags, all_comments, pages):
@@ -115,19 +171,7 @@ def main():
     all_comments = []
     all_flags = []
 
-    # regex for html comments
-    html_comment = re.compile('<!--(?:.|\r|\n)+?-->')
-    # regex for finding links to other pages
-    find_href = re.compile("href=\".+?\"")
-
-    # implement checking that the initial url can be reached to avoid erroring
-    try:
-        print(f'\n[*] - Connecting to {url}...\n')
-        r = requests.get(url)
-    except:
-        print(f'[-] - ERROR - Connection to {url} could not be made',
-              file=sys.stderr)
-        sys.exit(0)
+    connection_test(url)
 
     # iterate through pages to find data
     index = 1
@@ -145,42 +189,15 @@ def main():
             print(f'[-] - {url} did not respond well to that request... sorry')
             continue
 
-        # extracting html comments
-        comments = re.findall(html_comment, page_data)
-        if comments:
-            print('\n[+] - COMMENTS - [+]')
-            for comment in comments:
-                print('- \"' + comment + '\"\n')
-                if comment not in all_comments:
-                    all_comments.append(comment)
-        else:
-            print('[-] - No HTML comments present\n')
+        [all_comments.append(comment) for comment in
+         extract_comments(page_data) if comment not in all_comments]
 
-        # tests for lower case,  upper case, and title case flag to be thorough
         if flag_format:
-            flags = re.findall(flag_format, page_data)
-            flags += re.findall(flag_format.upper(), page_data)
-            flags += re.findall(flag_format.title(), page_data)
+            [all_flags.append(flag) for flag in
+             find_flags(page_data, flag_format) if flag not in all_flags]
 
-            if flags:
-                print('[+] - FLAGS - [+]\n')
-                for flag in flags:
-                    print('- ' + flag + '\n')
-                    if flag not in all_flags:
-                        all_flags.append(flag)
-            else:
-                print('[-] - No flags found...')
-
-        # finding new pages to spider
-        links = re.findall(find_href, page_data)
-        for link in links:
-            link = link[len('href="'):-1]
-
-            if url in link:
-                link = link[len(url):]
-
-            if link not in pages and link.startswith('/'):
-                pages.append(link)
+        [pages.append(link) for link in find_pages(page_data, url)
+         if link not in pages and link.startswith('/')]
 
     print_summary(all_flags, all_comments, pages)
 
