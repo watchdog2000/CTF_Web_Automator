@@ -9,7 +9,7 @@ The only dependency is python3, the requests module and the optparse module (whi
 
 USAGE:
 
-'python3 web-source-extractor.py -u <url> -p <file containing a list of page sub directories> -f <hex | custom>'
+'python3 web-source-extractor.py -u <url> -p <file containing a list of page sub directories> -f <hex | regex | custom>'
 
 EXAMPLE:
 
@@ -23,6 +23,6 @@ The file containing web directories that you wish to scrape should be a list, wi
 
 /test'
 
-The flag format can currently be hexadecimal, or a custom format, where the user is prompted for the first know character or charcaters, and the last known character or characters. Flag formats are often like: 'FLAG{<flag here>}' so the user would input 'FLAG{' and '}'. Of course, the more characters you input, the more accurate the tool will be, wih less false positives.
+The flag format can currently be hexadecimal, a regex string or a custom format, where the user is prompted for the first know character or charcaters, and the last known character or characters. Flag formats are often like: 'FLAG{<flag here>}' so the user would input 'FLAG{' and '}'. Of course, the more characters you input, the more accurate the tool will be, wih less false positives.
   
-It goes without saying, make sure you have permission/arent in breach of terms of service for any websites you scrape for this data.
+It goes without saying, make sure you have permission/aren't in breach of terms of service for any websites you scrape for this data.
